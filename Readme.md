@@ -65,3 +65,34 @@ fips: false
 
 pullSecret: '{"auths":{"fake":{"auth": "bar"}}}' 
 sshKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCZObAvCJbpdbh0LjubGzMzktmsGpowEB/PuQOFNvLT0b7ZB7WZtd/zmu+RRac1pTteYUO85cIgZPKpBROkjWT/ThxLEpqDb73z3gByhxPKwzXnJ5lZqlBXZ3yFtpC2KIeqq28kGFecILIeEHRr44b5Xv1DYdeNEA0JiZzieIjlf1M25R6aXbxJbbsZV9anfbDz6l33om7+WZEjrWqNW9B9tu49tlz6VSBeUTWK0wV6A0wf55o3mhWVGHY8raZcVO2SZLEhUMNHfg9qHUAf/hRxlsXvPWuLPXse1YFXnWdUDQgp01GLXnrsox9jE2T6lnJ3qVtfLmKYYnkeOGIGel+YN8kT+XPC/V2s4KAOI0WWm8+irVnZKjGXl/o6SOYEtG/m+Ht3FQTmyA2Imy5vNUbtTJVZ5L68LpUfkq1k0TFgZoKCgezWfZmt7L2Ru05+1s9bwhce7kqs8Nm+KAW84EEhNuuQVJN1gw+5SKIdAE+MoHwo5KUVUVZ1fFIPFr4WJys= root@ns1'
+
+
+
+
+
+
+#######Configure OATH Identifier############
+
+oc create secret generic github-secret --from-literal=clientSecret=XXXXXXXXXXXXXXXX -n openshift-config
+
+
+apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  name: cluster
+spec:
+  identityProviders:
+  - name: github
+    chalenge: false
+    login: true
+    mappingMethod: claim
+    type: GitHub
+    github:
+      clientID: "b67e673b8f0020df36a3"
+      clientSecret:
+        name: github-secret
+      organizations: 
+      - amara-donastia
+
+
+    oc apply -f github-cr.yaml
