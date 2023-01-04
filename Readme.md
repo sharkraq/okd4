@@ -7,7 +7,7 @@ sed -i 's/mastersSchedulable: true/mastersSchedulable: False/' nova/manifests/cl
 3-Create ignition config and give 755 permission
 openshift-install create ignition-configs --dir nova/ && chmod -R  755 nova/
 4-Boot bootstrap nnode and master
-coreos-installer install --ignition-url=http://ns1.nova.io:8080/nova/bootstrap.ign /dev/sda --insecure-ignitioin
+coreos-installer install --ignition-url=http://ns1.nova.io:8080/nova/bootstrap.ign /dev/sda --insecure-ignitioin (make sure to uncomment from haproxy)
 coreos-installer install --ignition-url=http://ns1.nova.io:8080/nova/master.ign /dev/sda --insecure-ignitioin
 coreos-installer install --ignition-url=http://ns1.nova.io:8080/nova/worker.ign /dev/sda --insecure-ignitioin
 5-Monitor  install
