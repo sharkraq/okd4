@@ -2,10 +2,10 @@ OKD4 install
 
 1-Create  cofig maninfest after creating nova/install-config.yaml see example below
 openshift-install create manifests --dir nova/
-2-Create ignition config and give 755 permission
-openshift-install create ignition-configs --dir nova/ && chmod -R  755 nova/
-3-Edit the scheduler to prevent pods on control plane
+2-Edit the scheduler to prevent pods on control plane
 sed -i 's/mastersSchedulable: true/mastersSchedulable: False/' nova/manifests/cluster-scheduler-02-config.yml
+3-Create ignition config and give 755 permission
+openshift-install create ignition-configs --dir nova/ && chmod -R  755 nova/
 4-Boot bootstrap nnode and master
 coreos-installer install --ignition-url=http://ns1.nova.io:8080/nova/bootstrap.ign /dev/sda --insecure-ignitioin
 coreos-installer install --ignition-url=http://ns1.nova.io:8080/nova/master.ign /dev/sda --insecure-ignitioin
@@ -13,7 +13,7 @@ coreos-installer install --ignition-url=http://ns1.nova.io:8080/nova/worker.ign 
 5-Monitor  install
  openshift-install --dir=nova/ wait-for bootstrap-complete --log-level=info
 6-Set oc enviroment
-export KUBECONFIG=/var/www/htmlnova/auth/kubeconfig
+export KUBECONFIG=/var/www/html/nova/auth/kubeconfig
 oc whoami
 oc get nodes
 oc get csr
@@ -22,8 +22,9 @@ oc adm certificate approve `oc get csr|awk -F' ' '{print $1}'|grep -v NAME`
 7-Login to console
 kubeadmin
 cat nova/auth/kubeadmin-password
-8-List the nodes
+8-List the nodes and view operator status
 oc get nodes
+watch -n5 oc get clusteroperators
 11-Shutdown  cluster
 for node in $(oc get nodes -o jsonpath='{.items[*].metadata.name}'); do oc debug node/${node} -- chroot /host shutdown -h 1; done 
 
@@ -33,7 +34,7 @@ for node in $(oc get nodes -o jsonpath='{.items[*].metadata.name}'); do oc debug
 
 #################
 
-OKD4 install 
+OKD4 install install-config.yaml
 
 apiVersion: v1
 baseDomain: nova.io
@@ -72,9 +73,11 @@ sshKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCZObAvCJbpdbh0LjubGzMzktmsGpowEB/
 
 
 #######Configure OATH Identifier############
-
+1-Create secret object
 oc create secret generic github-secret --from-literal=clientSecret=XXXXXXXXXXXXXXXX -n openshift-config
 
+
+2 Create github-cr.yaml
 
 apiVersion: config.openshift.io/v1
 kind: OAuth
